@@ -1,0 +1,45 @@
+heat_template_version: 2013-05-23
+
+resources:
+  wait_condition:
+    type: AWS::CloudFormation::WaitCondition
+    properties:
+      Handle: {get_resource: wait_handle}
+      # Note, count of 6 vs 7 is due to duplicate signal ID 5 sent below
+      Count: 5
+      Timeout: 600
+
+  wait_handle:
+    type: AWS::CloudFormation::WaitConditionHandle
+
+  instance1:
+    type: OS::Nova::Server
+    properties:
+      image: 4b14a92e-84c8-4770-9245-91ecb8501cc2  # CentOS
+      flavor: 1 GB Performance
+      key_name: jasond
+      config_drive: True
+      user_data_format: RAW
+      user_data:
+        str_replace:
+          template: |
+            #!/bin/bash -x
+
+            curl -i -X PUT --data-binary '{"Reason": "signal2"}' -H 'Content-Type: application/json' -H 'Accept: application/json' '%wc_endpoint%'
+
+            curl -i -X PUT --data-binary '{"Reason": "signal3", "Data": "data3"}' -H 'Content-Type: application/json' -H 'Accept: application/json' '%wc_endpoint%'
+
+            curl -i -X PUT --data-binary '{"Reason": "signal4", "Data": "data4"}' -H 'Content-Type: application/json' -H 'Accept: application/json' '%wc_endpoint%'
+
+            curl -i -X PUT --data-binary '{"UniqueId": "5"}' -H 'Content-Type: application/json' -H 'Accept: application/json' '%wc_endpoint%'
+
+            curl -i -X PUT --data-binary '{"UniqueId": "5", "Status": "SUCCESS"}' -H 'Content-Type: application/json' -H 'Accept: application/json' '%wc_endpoint%'
+
+            curl -i -X PUT --data-binary '{"Status": "SUCCESS"}' -H 'Content-Type: application/json' -H 'Accept: application/json' '%wc_endpoint%'
+
+          params:
+            "%wc_endpoint%": { get_resource: 'wait_handle' }
+
+outputs:
+  wc_data:
+    value: { get_attr: ['wait_condition', 'Data'] }
