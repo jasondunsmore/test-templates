@@ -2,4 +2,4 @@ heat_template_version: 2013-05-23
 
 resources:
   template_resource:
-    type: https://raw.githubusercontent.com/jasondunsmore/useful-heat-templates/master/minimal.template
+    type: https://raw.githubusercontent.com/jasondunsmore/useful-heat-templates/master/minimal.yaml
