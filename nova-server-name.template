@@ -13,9 +13,9 @@ resources:
     properties:
       name:
         str_replace:
-          template: %domain%-%server%
+          template: "%domain%-%server%"
           params:
-            %domain: { get_param: domain_name }
-            %server%: { get_param: server_name }
+            "%domain%": { get_param: domain_name }
+            "%server%": { get_param: server_name }
       flavor: 1GB Standard Instance
       image: 5b0d5891-f80c-412a-9b73-cc996de9d719
