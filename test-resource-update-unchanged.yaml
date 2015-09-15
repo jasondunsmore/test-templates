@@ -1,0 +1,13 @@
+heat_template_version: 2013-05-23
+
+description: >
+  Hello world HOT template that uses TestResource foo
+
+resources:
+  test:
+    type: OS::Heat::TestResource
+    properties:
+      value: Test1
+      fail: False
+      update_replace: False
+      wait_secs: 0
