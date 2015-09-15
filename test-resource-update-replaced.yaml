@@ -7,7 +7,7 @@ resources:
   test:
     type: OS::Heat::TestResource
     properties:
-      value: Test1
+      value: Test2
       fail: False
       update_replace: True
       wait_secs: 0
