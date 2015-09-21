@@ -4,8 +4,8 @@ resources:
   hello_world:
     type: "OS::Nova::Server"
     properties:
-      flavor: 1GB Standard Instance
-      image: 5b0d5891-f80c-412a-9b73-cc996de9d719
+      flavor: m1.tiny
+      image: cirros-0.3.4-x86_64-uec
       config_drive: "true"
       user_data_format: RAW
       user_data: |
@@ -16,5 +16,5 @@ resources:
     type: "OS::Nova::Server"
     depends_on: hello_world
     properties:
-      flavor: 1GB Standard Instance
-      image: 5b0d5891-f80c-412a-9b73-cc996de9d719
+      flavor: m1.tiny
+      image: cirros-0.3.4-x86_64-ue
