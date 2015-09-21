@@ -1,20 +1,15 @@
 heat_template_version: 2013-05-23
 
 resources:
-  hello_world:
-    type: "OS::Nova::Server"
+  test1:
+    type: "OS::Heat::TestResource"
     properties:
-      flavor: m1.tiny
-      image: cirros-0.3.4-x86_64-uec
-      config_drive: "true"
-      user_data_format: RAW
-      user_data: |
-        #!/bin/bash -xv
-        echo "hello world" > /root/hello-world.txt
+      value: Test
+      update_replace: False
 
-  hello_world2:
-    type: "OS::Nova::Server"
-    depends_on: hello_world
+  test2:
+    type: "OS::Heat::TestResource"
+    depends_on: test1
     properties:
-      flavor: m1.tiny
-      image: cirros-0.3.4-x86_64-uec
+      value: Test
+      update_replace: False
