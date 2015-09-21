@@ -1,0 +1,17 @@
+heat_template_version: 2013-05-23
+
+resources:
+  hello_world:
+    type: "OS::Nova::Server"
+    properties:
+      flavor: 1GB Standard Instance
+      image: 5b0d5891-f80c-412a-9b73-cc996de9d719
+      metadata:
+        a: 1
+        b: 2
+        c: 3
+
+outputs:
+  public_ip:
+    value: { get_attr: [ hello_world, accessIPv4 ] }
+    description: The public ip address of the server
