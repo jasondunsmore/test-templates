@@ -1,0 +1,11 @@
+heat_template_version: 2013-05-23
+
+resources:
+  lb:
+    type: Rackspace::Cloud::LoadBalancer
+    properties:
+      nodes: []
+      protocol: TCP
+      port: 80
+      virtualIps:
+        - {"type": "PUBLIC", "ipVersion": "IPV4"}
