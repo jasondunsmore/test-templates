@@ -10,6 +10,5 @@ resources:
       virtualIps:
         - {"type": "PUBLIC", "ipVersion": "IPV4"}
       sslTermination:
-        enabled: True
         securePort: 443
         secureTrafficOnly: True
