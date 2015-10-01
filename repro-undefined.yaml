@@ -1,0 +1,65 @@
+heat_template_version: 2014-10-16
+
+description: |
+  Creating Rackspace cloud server with user_data.
+
+resources:
+  test_server:
+    type: "OS::Nova::Server"
+    properties:
+      name: test-server
+      admin_pass: password1
+      flavor: 2 GB General Purpose v1
+      image: Ubuntu 14.04 LTS (Trusty Tahr) (PVHVM)
+      user_data_format: RAW
+      user_data:
+        str_replace:
+          template: |
+            #!/bin/bash
+            apt-get clean; sudo apt-get update
+            apt-get install -y apache2            
+
+            cat >/opt/fetch_file_from_swift <<EOF
+            #!/bin/bash
+            username=xxxx
+            APIkey=xxxx
+            dc=hkg
+            container=abc
+            file=xyz
+
+            token() {
+                   token=\`curl -s "https://identity.api.rackspacecloud.com/v2.0/tokens" -X POST \
+                   -d '{"auth":{"RAX-KSKEY:apiKeyCredentials":{"username":"'\$username'", "apiKey":"'\$APIkey'"}}}' \
+                   -H "Content-Type: application/json" | python -m json.tool  | sed -n '/expires/{n;p;}' |sed -e 's/^.*"id": "\(.*\)",/\1/'\`
+                   echo "Your API Token is ---->  \$token"
+                   }
+
+            cdnauth() {
+                    cdnauth=\`curl -s "https://identity.api.rackspacecloud.com/v2.0/tokens" -X POST \
+                    -d '{"auth":{"RAX-KSKEY:apiKeyCredentials":{"username":"'\$username'", "apiKey":"'\$APIkey'"}}}' \
+                    -H "Content-Type: application/json" | python -m json.tool | grep https://storage101."\$dc" | sed -e 's/.*": "\(.*\)",/\1/'\`
+                    url=\`echo \$cdnauth | sed -e 's/ *$//'\`
+                    echo "URL is ---->  \$url"
+                    }
+
+            listcontents() {
+                          curl -H "X-Auth-Token: \$token" \$url
+                          curl -H "X-Auth-Token: \$token" \$url/\$container
+                          }
+
+            wgetfile() {
+                      curl -H "X-Auth-Token: \$token" \$url/\$container/\$file > /opt/\$file
+                      }
+
+            token
+            cdnauth
+            listcontents
+            wgetfile
+
+            EOF
+            
+            bash -x /opt/fetch_fetch_file_from_swift
+outputs:
+  server_ip:
+    value:
+      get_attr: [test_server, accessIPv4]
