@@ -13,11 +13,11 @@ resources:
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PVHVM)
       user_data_format: RAW
       user_data: |
-        #!/bin/bash
+        #!/bin/bash -x
         apt-get clean; sudo apt-get update
         apt-get install -y apache2            
 
-        cat >/opt/fetch_file_from_swift <<EOF
+        cat >/opt/fetch_file_from_swift<<EOF
         #!/bin/bash
         username=xxxx
         APIkey=xxxx
@@ -27,26 +27,26 @@ resources:
 
         token() {
                token=\`curl -s "https://identity.api.rackspacecloud.com/v2.0/tokens" -X POST \
-               -d '{"auth":{"RAX-KSKEY:apiKeyCredentials":{"username":"'\$username'", "apiKey":"'\$APIkey'"}}}' \
+               -d '{"auth":{"RAX-KSKEY:apiKeyCredentials":{"username":"'$username'", "apiKey":"'$APIkey'"}}}' \
                -H "Content-Type: application/json" | python -m json.tool  | sed -n '/expires/{n;p;}' |sed -e 's/^.*"id": "\(.*\)",/\1/'\`
-               echo "Your API Token is ---->  \$token"
+               echo "Your API Token is ---->  $token"
                }
 
         cdnauth() {
                 cdnauth=\`curl -s "https://identity.api.rackspacecloud.com/v2.0/tokens" -X POST \
-                -d '{"auth":{"RAX-KSKEY:apiKeyCredentials":{"username":"'\$username'", "apiKey":"'\$APIkey'"}}}' \
-                -H "Content-Type: application/json" | python -m json.tool | grep https://storage101."\$dc" | sed -e 's/.*": "\(.*\)",/\1/'\`
-                url=\`echo \$cdnauth | sed -e 's/ *$//'\`
-                echo "URL is ---->  \$url"
+                -d '{"auth":{"RAX-KSKEY:apiKeyCredentials":{"username":"'$username'", "apiKey":"'$APIkey'"}}}' \
+                -H "Content-Type: application/json" | python -m json.tool | grep https://storage101."$dc" | sed -e 's/.*": "\(.*\)",/\1/'\`
+                url=\`echo $cdnauth | sed -e 's/ *$//'\`
+                echo "URL is ---->  $url"
                 }
 
         listcontents() {
-                      curl -H "X-Auth-Token: \$token" \$url
-                      curl -H "X-Auth-Token: \$token" \$url/\$container
+                      curl -H "X-Auth-Token: $token" $url
+                      curl -H "X-Auth-Token: $token" $url/$container
                       }
 
         wgetfile() {
-                  curl -H "X-Auth-Token: \$token" \$url/\$container/\$file > /opt/\$file
+                  curl -H "X-Auth-Token: $token" $url/$container/$file > /opt/$file
                   }
 
         token
