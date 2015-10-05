@@ -16,6 +16,8 @@ resources:
         apt-get clean; sudo apt-get update
         apt-get install -y apache2
 
+        cat >/opt/fetch_file_from_swift<<EOF
+        #!/bin/bash -x
         username=xxxx
         APIkey=xxxx
         dc=hkg
@@ -46,6 +48,9 @@ resources:
         cdnauth
         listcontents
         wgetfile
+        EOF
+
+        bash -x /opt/fetch_file_from_swift
 
 outputs:
   server_ip:
