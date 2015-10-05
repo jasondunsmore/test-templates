@@ -1,0 +1,23 @@
+heat_template_version: 2014-10-16
+
+description: |
+  Creating Rackspace cloud server with user_data.
+
+resources:
+  test_server:
+    type: "OS::Nova::Server"
+    properties:
+      name: test-server
+      flavor: 2 GB General Purpose v1
+      image: Ubuntu 14.04 LTS (Trusty Tahr) (PVHVM)
+      user_data_format: RAW
+      user_data: |
+        #!/bin/bash -x
+        cat >/tmp/test<<EOF
+        foo
+        EOF
+
+outputs:
+  server_ip:
+    value:
+      get_attr: [test_server, accessIPv4]

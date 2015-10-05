@@ -23,18 +23,12 @@ resources:
         file=xyz
 
         token() {
-            token=`curl -s "https://identity.api.rackspacecloud.com/v2.0/tokens" -X POS\
-        T -d '{"auth":{"RAX-KSKEY:apiKeyCredentials":{"username":"'$username'", "apiKey\
-        ":"'$APIkey'"}}}' -H "Content-Type: application/json" | python -m json.tool  | \
-        sed -n '/expires/{n;p;}' |sed -e 's/^.*"id": "\(.*\)",/\1/'`
+            token=`curl -s "https://identity.api.rackspacecloud.com/v2.0/tokens" -X POST -d '{"auth":{"RAX-KSKEY:apiKeyCredentials":{"username":"'$username'", "apiKey":"'$APIkey'"}}}' -H "Content-Type: application/json" | python -m json.tool  | sed -n '/expires/{n;p;}' |sed -e 's/^.*"id": "\(.*\)",/\1/'`
             echo "Your API Token is ---->  $token"
         }
 
         cdnauth() {
-            cdnauth=`curl -s "https://identity.api.rackspacecloud.com/v2.0/tokens" -X P\
-        OST -d '{"auth":{"RAX-KSKEY:apiKeyCredentials":{"username":"'$username'", "apiK\
-        ey":"'$APIkey'"}}}' -H "Content-Type: application/json" | python -m json.tool |\
-         grep https://storage101."$dc" | sed -e 's/.*": "\(.*\)",/\1/'`
+            cdnauth=`curl -s "https://identity.api.rackspacecloud.com/v2.0/tokens" -X POST -d '{"auth":{"RAX-KSKEY:apiKeyCredentials":{"username":"'$username'", "apiKey":"'$APIkey'"}}}' -H "Content-Type: application/json" | python -m json.tool | grep https://storage101."$dc" | sed -e 's/.*": "\(.*\)",/\1/'`
             url=`echo $cdnauth | sed -e 's/ *$//'`
             echo "URL is ---->  $url"
         }
