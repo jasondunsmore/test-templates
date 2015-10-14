@@ -10,9 +10,9 @@ resources:
   test2:
     type: "OS::Heat::TestResource"
     properties:
-      value: {get_attr: [test1, value]}
+      value: { get_attr: [test1, output] }
       update_replace: False
 
 outputs:
   test2_value:
-    value: {get_attr: [test2, value]}
+    value: { get_attr: [test2, output] }
