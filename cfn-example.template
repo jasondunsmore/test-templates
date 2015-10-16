@@ -1,18 +1,14 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
-
   "Description" : "Hello world",
-
   "Parameters" : {
-
     "InstanceType" : {
       "Description" : "WebServer EC2 instance type",
       "Type" : "String",
-      "Default" : "1GB Standard Instance"
+      "Default" : "1GB Standard Instance",
       "AllowedValues" : [ "1GB Standard Instance", "2GB Standard Instance" ],
       "ConstraintDescription" : "must be a valid EC2 instance type."
     },
-
   "Resources" : {
     "TestServer": {
       "Type": "AWS::EC2::Instance",
@@ -26,7 +22,6 @@
       }
     }
   },
-
   "Outputs" : {
     "PublicIP" : {
       "Value" : { "Fn::GetAtt" : [ "TestServer", "PublicIp" ]},
