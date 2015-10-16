@@ -27,7 +27,7 @@
   },
   "Outputs" : {
     "PublicIP" : {
-      "Value" : { "Fn::GetAtt" : [ "TestServer", "PublicIp" ]},
+      "Value" : { "Fn::GetAtt" : [ "TestServer", "accessIPv4" ]},
       "Description" : "Public IP of server"
     }
   }
