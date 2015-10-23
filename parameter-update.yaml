@@ -1,0 +1,29 @@
+heat_template_version: 2013-05-23
+
+description: >
+  This is a test
+
+parameters:
+  pass:
+    type: string
+    description: Root password
+    hidden: true
+    default: secret
+
+resources:
+  hello_world:
+    type: "OS::Nova::Server"
+    properties:
+      flavor: 1GB Standard Instance
+      image: 5b0d5891-f80c-412a-9b73-cc996de9d719
+      user_data:
+        str_replace:
+          template: |
+            echo "%pass%" | passwd --stdin root
+          params:
+            "%pass%": { get_param: pass }
+
+outputs:
+  foo:
+    description: Show foo parameter value
+    value: { get_param: pass }

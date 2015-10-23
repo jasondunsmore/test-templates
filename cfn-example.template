@@ -14,7 +14,7 @@
     "TestServer": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "ImageId" : "5b0d5891-f80c-412a-9b73-cc996de9d719",
+        "ImageId" : "4b14a92e-84c8-4770-9245-91ecb8501cc2",
         "InstanceType"   : { "Ref" : "InstanceType" },
         "UserData"       : { "Fn::Base64" : { "Fn::Join" : ["", [
           "#!/bin/bash -v\n",
