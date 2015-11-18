@@ -1,0 +1,18 @@
+heat_template_version: 2013-05-23
+
+resources:
+  hello_world:
+    type: "OS::Nova::Server"
+    properties:
+      flavor: m1.tiny
+      image: cirros-0.3.4-x86_64-uec
+      config_drive: "true"
+      user_data_format: RAW
+      user_data: |
+        #!/bin/bash -xv
+        echo "hello world2" > /root/hello-world.txt
+
+outputs:
+  public_ip:
+    value: { get_attr: [ hello_world, accessIPv4 ] }
+    description: The public ip address of the server
