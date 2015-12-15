@@ -1,0 +1,18 @@
+heat_template_version: 2013-05-23
+
+parameters:
+  immutable_param:
+    type: string
+    default: foo
+    updatable: false
+
+  updatable_param:
+    type: string
+    default: foo4
+    updatable: true
+
+resources:
+  the_resource:
+    type: OS::Heat::RandomString
+    properties:
+      length: 10
