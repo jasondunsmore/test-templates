@@ -1,0 +1,42 @@
+heat_template_version: 2013-05-23
+
+description: |
+  OS::Heat::SwiftSignal test
+
+resources:
+  test_wait_condition:
+    type: "OS::Heat::SwiftSignal"
+    depends_on: test_server
+    properties:
+      handle: { get_resource: test_wait_condition_handle }
+      timeout: 1200
+      count: 2
+
+  test_wait_condition_handle:
+    type: "OS::Heat::SwiftSignalHandle"
+
+  test_server:
+    type: "OS::Nova::Server"
+    properties:
+      flavor: m1.tiny
+      image: cirros-0.3.4-x86_64-uec
+      name: Swift signal test
+      user_data_format: RAW
+      user_data:
+        str_replace:
+          template: |
+            #!/bin/bash -v
+            echo "hello world" > /root/hello-world.txt
+            curl -X PUT --data '{"status": "SUCCESS"}' '%handle%'
+            #curl -X PUT '%handle%'
+            curl -X PUT --data '{"status": "SUCCESS", "data": "test", "id": 3, "reason": "foo"}' '%handle%'
+            #curl -X PUT --data '{"status": "FAILED"}' '%handle%'
+            #curl -X PUT --data '{"status": "SUCCESS", "data": {"a": 1, "b": 2}, "id": 2, "reason": "foo"}' '%handle%'
+            #curl -X PUT --data '{"status": "SUCCESS", "data": "{\"a\": 1, \"b\": 2}", "id": 1, "reason": "foo"}' '%handle%'
+          params:
+            "%handle%": { get_resource: test_wait_condition_handle }
+
+outputs:
+  swiftsignal_data:
+    description: Data from SwiftSignal resource
+    value: { get_attr: [ test_wait_condition, data ] }
