@@ -1,0 +1,21 @@
+heat_template_version: 2013-05-23
+
+parameters:
+  servers:
+    type: Number
+    default: 1
+
+resources:
+  server-group:
+    type: OS::Heat::ResourceGroup
+    count: { get_param: servers }
+    resource_def:
+      type: "OS::Nova::Server"
+      properties:
+        flavor: m1.tiny
+        image: cirros-0.3.4-x86_64-uec
+        config_drive: "true"
+        user_data_format: RAW
+        user_data: |
+          #!/bin/bash -xv
+          echo "hello world" > /root/hello-world.txt
