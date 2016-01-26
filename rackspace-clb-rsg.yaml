@@ -143,34 +143,6 @@ resources:
             virtualIps:
             - {ipVersion: IPV4, type: PUBLIC}
         type: Rackspace::Cloud::LoadBalancer
-    load_balancer_http_check:
-        depends_on: load_balancer
-        properties:
-            details:
-                url:
-                    str_replace:
-                        params:
-                            ipaddr:
-                                get_attr: [load_balancer, PublicIp]
-                        template: http://ipaddr
-            entity: {get_resource: wordpress_server}
-            label:
-                str_replace:
-                    params:
-                        stack: {get_param: 'OS::stack_name'}
-                    template: stack Load Balancer HTTP Check
-            metadata:
-                rax-heat: {get_param: 'OS::stack_id'}
-                stack-name: {get_param: 'OS::stack_name'}
-            monitoring_zones_poll: [Northern Virginia (IAD), Chicago (ORD), Dallas
-                    Fort Worth (DFW), London (LON)]
-            period: 120
-            target_hostname:
-                get_attr: [load_balancer, PublicIp]
-            target_receiver: IPv4
-            timeout: 10
-            type: remote.http
-        type: Rackspace::CloudMonitoring::Check
     other_config:
         properties:
             config: "---\n- name: Install and configure Lsyncd\n  hosts: localhost\n\
@@ -289,34 +261,6 @@ resources:
             software_config_transport: POLL_TEMP_URL
             user_data_format: SOFTWARE_CONFIG
         type: OS::Nova::Server
-    wordpress_server_http_check:
-        depends_on: deploy_wordpress
-        properties:
-            details:
-                url:
-                    str_replace:
-                        params:
-                            ipaddr:
-                                get_attr: [wordpress_server, accessIPv4]
-                        template: http://ipaddr
-            entity: {get_resource: wordpress_server}
-            label:
-                str_replace:
-                    params:
-                        stack: {get_param: 'OS::stack_name'}
-                    template: stack Master HTTP Check
-            metadata:
-                rax-heat: {get_param: 'OS::stack_id'}
-                stack-name: {get_param: 'OS::stack_name'}
-            monitoring_zones_poll: [Northern Virginia (IAD), Chicago (ORD), Dallas
-                    Fort Worth (DFW), London (LON)]
-            period: 120
-            target_hostname:
-                get_attr: [wordpress_server, accessIPv4]
-            target_receiver: IPv4
-            timeout: 10
-            type: remote.http
-        type: Rackspace::CloudMonitoring::Check
 
 outputs:
     mysql_password:
