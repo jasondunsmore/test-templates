@@ -5,21 +5,6 @@ parameter_groups:
     parameters: [wordpress_url, wordpress_sitename, wordpress_user, wordpress_email]
 
 parameters:
-    database_disk:
-        constraints:
-        -   range: {max: 500, min: 5}
-        default: 5
-        description: Size of the Cloud Database volume in GB
-        label: Database Disk (in GB)
-        type: number
-    database_flavor:
-        constraints:
-        -   allowed_values: [1GB Instance, 2GB Instance, 4GB Instance, 8GB Instance,
-                16GB Instance, 32GB Instance, 64GB Instance]
-        default: 1GB Instance
-        description: Flavor for the Cloud Database
-        label: Cloud Database Flavor
-        type: string
     flavor:
         constraints:
         -   allowed_values: [1 GB General Purpose v1, 2 GB General Purpose v1, 4 GB
@@ -57,64 +42,6 @@ parameters:
         type: string
 
 resources:
-    database_pass: {type: 'OS::Heat::RandomString'}
-    deploy_other:
-        depends_on: deploy_wordpress
-        properties:
-            config: {get_resource: other_config}
-            input_values:
-                firewall_global_rules: ['0.0.0.0,0,22,tcp', '0.0.0.0,0,80,tcp', '0.0.0.0,0,443,tcp']
-                firewall_node_rules: []
-                firewall_nodes:
-                    get_attr: [wordpress_secondary, private_ip]
-                lsync_private_key:
-                    get_attr: [ssh_key, private_key]
-                lsync_servers:
-                    get_attr: [wordpress_secondary, private_ip]
-            server: {get_resource: wordpress_server}
-            signal_transport: TEMP_URL_SIGNAL
-        type: OS::Heat::SoftwareDeployment
-    deploy_roles:
-        properties:
-            config: {get_resource: upload_role_config}
-            server: {get_resource: wordpress_server}
-            signal_transport: TEMP_URL_SIGNAL
-        type: OS::Heat::SoftwareDeployment
-    deploy_wordpress:
-        depends_on: deploy_roles
-        properties:
-            config: {get_resource: wordpress_config}
-            input_values:
-                holland_create_user: 'no'
-                holland_mysql_host:
-                    get_attr: [wordpress_database, hostname]
-                holland_mysql_password:
-                    get_attr: [holland_pass, value]
-                holland_mysql_user: holland
-                nginx_vhost_phpmyadmin: 'True'
-                nginx_vhost_str: {get_param: wordpress_url}
-                nginx_vhost_template: wordpress
-                phpmyadmin_host:
-                    get_attr: [wordpress_database, hostname]
-                phpmyadmin_pass:
-                    get_attr: [database_pass, value]
-                phpmyadmin_user: wordpress
-                tz: America/Chicago
-                wordpress_db_host:
-                    get_attr: [wordpress_database, hostname]
-                wordpress_db_name: wordpress
-                wordpress_db_pass:
-                    get_attr: [database_pass, value]
-                wordpress_db_user: wordpress
-                wordpress_domain: {get_param: wordpress_url}
-                wordpress_sitename: {get_param: wordpress_sitename}
-                wordpress_user: {get_param: wordpress_user}
-                wordpress_user_email: {get_param: wordpress_email}
-                wordpress_user_pass:
-                    get_attr: [wordpress_pass, value]
-            server: {get_resource: wordpress_server}
-            signal_transport: TEMP_URL_SIGNAL
-        type: OS::Heat::SoftwareDeployment
     holland_pass: {type: 'OS::Heat::RandomString'}
     load_balancer:
         depends_on: [deploy_wordpress, wordpress_secondary]
@@ -204,30 +131,6 @@ resources:
             - {default: '[]', name: firewall_nodes, type: CommaDelimitedList}
             - {default: '[]', name: firewall_node_rules, type: CommaDelimitedList}
         type: OS::Heat::SoftwareConfig
-    wordpress_database:
-        properties:
-            databases:
-            - {name: wordpress}
-            - {name: phpmyadmin}
-            datastore_type: mysql
-            datastore_version: '5.1'
-            flavor: {get_param: database_flavor}
-            name:
-                str_replace:
-                    params:
-                        stack: {get_param: 'OS::stack_name'}
-                    template: stack_Database
-            size: {get_param: database_disk}
-            users:
-            -   databases: [wordpress, phpmyadmin]
-                name: wordpress
-                password:
-                    get_attr: [database_pass, value]
-            -   databases: [wordpress, phpmyadmin]
-                name: holland
-                password:
-                    get_attr: [holland_pass, value]
-        type: OS::Trove::Instance
     wordpress_pass: {type: 'OS::Heat::RandomString'}
     wordpress_secondary:
         properties:
@@ -263,19 +166,6 @@ resources:
         type: OS::Nova::Server
 
 outputs:
-    mysql_password:
-        description: Database Password
-        value:
-            get_attr: [database_pass, value]
-    mysql_user: {description: Database User, value: wordpress}
-    phpmyadmin_url:
-        description: PHPMyAdmin URL
-        value:
-            str_replace:
-                params:
-                    IP:
-                        get_attr: [wordpress_server, accessIPv4]
-                template: https://IP/phpmyadmin/
     secondary_ips:
         description: Secondary Node IPs
         value:
