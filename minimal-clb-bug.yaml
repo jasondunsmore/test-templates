@@ -5,7 +5,7 @@ resources:
     type: Rackspace::Cloud::LoadBalancer
     properties:
       nodes:
-        - address: 162.242.216.226
+        - addresses: [162.242.216.226]
           port: 80
           condition: ENABLED
           type: PRIMARY
