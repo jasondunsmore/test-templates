@@ -1,0 +1,2 @@
+resource_registry:
+  Heat::InstallConfigAgent: https://raw.githubusercontent.com/rackerlabs/heat-ci/master/dev/bootconfig.yaml

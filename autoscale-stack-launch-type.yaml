@@ -7,17 +7,20 @@ parameters:
     type: string
     description : Name of a key pair to enable SSH access to instances.
     default: default
+
   flavor:
     type: string
     description: Flavor to use for the WordPress server.
     constraints:
       - custom_constraint: nova.flavor
     default: 4 GB Performance 
+
   image:
     type: string
     description: >
       Name or ID of the image to use for the WordPress server.
     default: CentOS 7 (PVHVM)
+
   db_name:
     type: string
     description: WordPress database name
@@ -29,6 +32,7 @@ parameters:
         description: >
           db_name must begin with a letter and contain only alphanumeric
           characters
+
   db_username:
     type: string
     description: The WordPress database admin account username
@@ -60,111 +64,68 @@ resources:
             template:
               heat_template_version: 2015-10-15
               description: This is a Heat template
+              
               parameters:
+                key_name:
+                  type: string
+                  description : Name of a key pair to enable SSH access to instances.
+                  default: jasond
+              
+                flavor:
+                  type: string
+                  description: Flavor to use for the WordPress server.
+                  constraints:
+                    - custom_constraint: nova.flavor
+                  default: 4 GB Performance 
+              
                 image:
-                  default: CentOS 7 (PVHVM)
                   type: string
-                flavor: 
-                  default: 4 GB Performance
-                  type: string
+                  description: >
+                    Name or ID of the image to use for the LAMP server.
+                    The image must have the software config agents baked-in.
+                  default: f4bbbce2-50b0-4b07-bf09-96c175a45f4b
+              
+              
               resources:
-                wp_config:
+                lamp_config:
                   type: OS::Heat::SoftwareConfig
                   properties:
-                    inputs:
-                      - name: db_name
-                      - name: db_user
-                      - name: db_password
-                      - name: db_ipaddr
                     group: script
                     config: |
                       #!/bin/bash -v
-                      
-                      yum -y install httpd wordpress
-                      
-                      sed -i "/Deny from All/d" /etc/httpd/conf.d/wordpress.conf
-                      sed -i "s/Require local/Require all granted/" /etc/httpd/conf.d/wordpress.conf
-                      sed -i s/database_name_here/$db_name/ /etc/wordpress/wp-config.php
-                      sed -i s/username_here/$db_user/      /etc/wordpress/wp-config.php
-                      sed -i s/password_here/$db_password/  /etc/wordpress/wp-config.php
-                      sed -i s/localhost/$db_ipaddr/        /etc/wordpress/wp-config.php
-                      
-                      setenforce 0 # Otherwise net traffic with DB is disabled
-                      
-                      systemctl start httpd.service
-
-                db_root_password:
-                  type: OS::Heat::RandomString
-
-                db_password:
-                  type: OS::Heat::RandomString
-
-                db_config:
-                  type: OS::Heat::SoftwareConfig
-                  properties:
-                    inputs:
-                      - name: db_rootpassword
-                      - name: db_name
-                      - name: db_user
-                      - name: db_password
-                    group: script
-                    config: |
-                      #!/bin/bash -v
-                      
-                      yum -y install mariadb mariadb-server
-                      touch /var/log/mariadb/mariadb.log
-                      chown mysql.mysql /var/log/mariadb/mariadb.log
-                      systemctl start mariadb.service
-                      
-                      # Setup MySQL root password and create a user
-                      mysqladmin -u root password $db_rootpassword
-                      cat << EOF | mysql -u root --password=$db_rootpassword
-                      CREATE DATABASE $db_name;
-                      GRANT ALL PRIVILEGES ON $db_name.* TO '$db_user'@'%'
-                      IDENTIFIED BY '$db_password';
-                      FLUSH PRIVILEGES;
-                      EXIT
+                      apt-get install -y apache2 mysql-server php5 php-pear php5-mysql
+                      cat > /var/www/html/info.php << EOF
+                      <?php
+                      phpinfo();
+                      ?>
                       EOF
-
-                wp_deploy:
+              
+                lamp_deploy:
                   type: OS::Heat::SoftwareDeployment
-                  depends_on: db_deployment
                   properties:
                     signal_transport: TEMP_URL_SIGNAL
                     config:
-                      get_resource: wp_config
+                      get_resource: lamp_config
                     server:
-                      get_resource: wp_server
-                    input_values:
-                      db_name: { get_param: db_name }
-                      db_user: { get_param: db_username }
-                      db_password: { get_attr: [ db_password, value ] }
-                      db_root_password: { get_attr: [ db_root_password, value ] }
-                      db_ipaddr: { get_attr: [ wordpress_instance, networks, private, 0 ] }
-
-                wp_server:
+                      get_resource: lamp_server
+              
+                lamp_server:
                   type: OS::Nova::Server
                   properties:
                     image: {get_param: image}
                     flavor: 2 GB Performance
+                    key_name: {get_param: key_name}
                     software_config_transport: POLL_TEMP_URL
                     user_data_format: SOFTWARE_CONFIG
-                    user_data: {get_attr: [boot_config, config]}
-
+              
               outputs:
-                wordpress_url:
-                  description: URL for Wordpress wiki
+                server_php_info:
+                  description: URL for PHP info on LAMP server
                   value:
                     str_replace:
-                      template: http://host/wordpress
+                      template: http://host/info.php
                       params:
-                        host: { get_attr: [wp_server, networks, private, 0] }
-                db_password:
-                  description: Database password
-                  value: { get_attr: [ db_password, value ] }
-                db_root_password:
-                  description: Database root password
-                  value: { get_attr: [ db_root_password, value ] }
+                        host: {get_attr: [lamp_server, accessIPv4]}
 
             disable_rollback: False
             environment:
