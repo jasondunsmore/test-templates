@@ -29,13 +29,10 @@ resources:
       group: script
       config: |
         #!/bin/bash -v
+        export DEBIAN_FRONTEND=noninteractive
         apt-get update
-        apt-get install -y apache2 mysql-server php5 php-pear php5-mysql
-        cat > /var/www/html/info.php << EOF
-        <?php
-        phpinfo();
-        ?>
-        EOF
+        apt-get install -y apache2 mysql-server-5.5 php5 php-pear php5-mysql
+        echo "<?php phpinfo(); ?>" > /var/www/html/info.php
 
   lamp_deploy:
     type: OS::Heat::SoftwareDeployment

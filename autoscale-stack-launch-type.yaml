@@ -93,12 +93,10 @@ resources:
                     group: script
                     config: |
                       #!/bin/bash -v
-                      apt-get install -y apache2 mysql-server php5 php-pear php5-mysql
-                      cat > /var/www/html/info.php << EOF
-                      <?php
-                      phpinfo();
-                      ?>
-                      EOF
+                      export DEBIAN_FRONTEND=noninteractive
+                      apt-get update
+                      apt-get install -y apache2 mysql-server-5.5 php5 php-pear php5-mysql
+                      echo "<?php phpinfo(); ?>" > /var/www/html/info.php
               
                 lamp_deploy:
                   type: OS::Heat::SoftwareDeployment
@@ -117,6 +115,7 @@ resources:
                     key_name: {get_param: key_name}
                     software_config_transport: POLL_TEMP_URL
                     user_data_format: SOFTWARE_CONFIG
+                    config_drive: True
               
               outputs:
                 server_php_info:
