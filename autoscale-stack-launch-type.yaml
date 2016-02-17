@@ -19,32 +19,8 @@ parameters:
     type: string
     description: >
       Name or ID of the image to use for the WordPress server.
-    default: CentOS 7 (PVHVM)
+    default: f4bbbce2-50b0-4b07-bf09-96c175a45f4b
 
-  db_name:
-    type: string
-    description: WordPress database name
-    default: wordpress
-    constraints:
-      - length: { min: 1, max: 64 }
-        description: db_name must be between 1 and 64 characters
-      - allowed_pattern: '[a-zA-Z][a-zA-Z0-9]*'
-        description: >
-          db_name must begin with a letter and contain only alphanumeric
-          characters
-
-  db_username:
-    type: string
-    description: The WordPress database admin account username
-    default: admin
-    hidden: true
-    constraints:
-      - length: { min: 1, max: 16 }
-        description: db_username must be between 1 and 64 characters
-      - allowed_pattern: '[a-zA-Z][a-zA-Z0-9]*'
-        description: >
-          db_username must begin with a letter and contain only alphanumeric
-          characters
 
 resources:
   asg_test:
