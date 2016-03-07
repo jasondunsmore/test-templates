@@ -37,7 +37,7 @@ resources:
         type: launch_stack
         args:
           stack:
-            template:
+            template: |              
               heat_template_version: 2015-10-15
               description: This is a Heat template
               

@@ -1,0 +1,57 @@
+heat_template_version: 2013-05-23
+
+description: >
+  A HOT template that holds a VM instance with an attached
+  Cinder volume.  The VM does nothing, it is only created.
+
+resources:
+  my_vol1:
+    type: OS::Cinder::Volume
+    properties:
+      size: 1
+
+  my_vol2:
+    type: OS::Cinder::Volume
+    properties:
+      size: 1
+
+  my_vol3:
+    type: OS::Cinder::Volume
+    properties:
+      size: 1
+
+  my_vol4:
+    type: OS::Cinder::Volume
+    properties:
+      size: 1
+
+  my_vol5:
+    type: OS::Cinder::Volume
+    properties:
+      size: 1
+
+  my_vol6:
+    type: OS::Cinder::Volume
+    properties:
+      size: 1
+
+  my_vol7:
+    type: OS::Cinder::Volume
+    properties:
+      size: 1
+
+  my_vol8:
+    type: OS::Cinder::Volume
+    properties:
+      size: 1
+
+  my_vol9:
+    type: OS::Cinder::Volume
+    properties:
+      size: 1
+
+  my_vol10:
+    type: OS::Cinder::Volume
+    properties:
+      size: 1
+

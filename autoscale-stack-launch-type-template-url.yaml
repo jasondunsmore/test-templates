@@ -6,14 +6,14 @@ parameters:
   key_name:
     type: string
     description : Name of a key pair to enable SSH access to instances.
-    default: jasond
+    default: my_key
 
   flavor:
     type: string
     description: Flavor to use for the WordPress server.
     constraints:
       - custom_constraint: nova.flavor
-    default: 4 GB Performance 
+    default: 4 GB Performance
 
   image:
     type: string
@@ -23,7 +23,7 @@ parameters:
 
 
 resources:
-  asg_test:
+  lamp_asg:
     type: Rackspace::AutoScale::Group
     properties:
       groupConfiguration:
@@ -39,9 +39,6 @@ resources:
           stack:
             template_url: https://raw.githubusercontent.com/jasondunsmore/useful-heat-templates/master/autoscale-stack-launch-type-template-only.yaml
             disable_rollback: False
-            environment:
-              resource_registry:
-                Heat::InstallConfigAgent: https://raw.githubusercontent.com/rackerlabs/heat-ci/master/dev/bootconfig.yaml
             parameters:
               flavor: {get_param: flavor}
               image: {get_param: image}
