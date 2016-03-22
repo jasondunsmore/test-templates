@@ -12,7 +12,7 @@ parameters:
     ansible_repo: {default: 'https://github.com/rackspace-orchestration-templates/ansible-roles.git',
         description: 'The Ansible Roles will be pulled from Git, using the repo provided',
         label: Git Repo for Ansible Roles, type: string}
-    secondary_template: {default: 'https://raw.githubusercontent.com/chrishultin/ansible-templates/master/mongodb-secondary.yaml',
+    secondary_template: {default: 'https://raw.githubusercontent.com/chrishultin/ansible-templates/375b8dcc781e5b67148b78dd701ddf3f1e9bf446/mongodb-secondary.yaml',
         description: Template to use for secondary servers, label: Secondary Template,
         type: string}
     server_count:
