@@ -1,0 +1,163 @@
+description: '#### MongoDB
+
+    '
+heat_template_version: '2015-10-15'
+parameter_groups:
+-   label: rax-dev-params
+    parameters: [server_image, secondary_template, ansible_branch, ansible_repo]
+parameters:
+    ansible_branch: {default: add-mongo, description: 'The Ansible Roles will be pulled
+            from Git, using the tag or branch provided', label: Git Branch or Tag
+            for Ansible Roles, type: string}
+    ansible_repo: {default: 'https://github.com/rackspace-orchestration-templates/ansible-roles.git',
+        description: 'The Ansible Roles will be pulled from Git, using the repo provided',
+        label: Git Repo for Ansible Roles, type: string}
+    secondary_template: {default: 'https://raw.githubusercontent.com/chrishultin/ansible-templates/master/mongodb-secondary.yaml',
+        description: Template to use for secondary servers, label: Secondary Template,
+        type: string}
+    server_count:
+        constraints:
+        -   range: {max: 10, min: 0}
+        default: 0
+        description: Number of secondary web nodes
+        label: Number of Secondary Servers
+        type: number
+    server_flavor:
+        constraints:
+        -   allowed_values: [1 GB General Purpose v1, 2 GB General Purpose v1, 4 GB
+                    General Purpose v1, 8 GB General Purpose v1]
+        default: 4 GB General Purpose v1
+        description: Flavor of Cloud Server to be used for all servers in this stack
+        label: Server Flavor
+        type: string
+    server_image:
+        constraints:
+        -   allowed_values: [f4bbbce2-50b0-4b07-bf09-96c175a45f4b]
+        default: f4bbbce2-50b0-4b07-bf09-96c175a45f4b
+        description: Image to use for WordPress
+        label: Server Image
+        type: string
+resources:
+    deploy_mongodb:
+        depends_on: deploy_roles
+        properties:
+            config: {get_resource: mongodb_config}
+            input_values:
+                mongodb_primary_ip:
+                    get_attr: [mongodb_server, networks, private, 0]
+                mongodb_replicaset_name: {get_param: 'OS::stack_name'}
+                mongodb_role: server
+                tz: America/Chicago
+            server: {get_resource: mongodb_server}
+            signal_transport: TEMP_URL_SIGNAL
+        type: OS::Heat::SoftwareDeployment
+    deploy_replicaset:
+        depends_on: deploy_roles
+        properties:
+            config: {get_resource: replicaset_config}
+            input_values:
+                firewall_global_rules: ['0.0.0.0,0,22,tcp', '0.0.0.0,0,27017,tcp']
+                firewall_node_rules: ['32,27017,tcp']
+                firewall_nodes:
+                    get_attr: [mongodb_secondary, private_ip]
+                mongodb_primary_ip:
+                    get_attr: [mongodb_server, networks, private, 0]
+                mongodb_replicaset_name: {get_param: 'OS::stack_name'}
+                mongodb_role: replicaset
+            server: {get_resource: mongodb_server}
+            signal_transport: TEMP_URL_SIGNAL
+        type: OS::Heat::SoftwareDeployment
+    deploy_roles:
+        properties:
+            config: {get_resource: upload_role_config}
+            server: {get_resource: mongodb_server}
+            signal_transport: TEMP_URL_SIGNAL
+        type: OS::Heat::SoftwareDeployment
+    deploy_secondary_firewall:
+        depends_on: [deploy_mongodb, mongodb_secondary]
+        properties:
+            config: {get_resource: firewall_config}
+            input_values:
+                firewall_global_rules: ['0.0.0.0,0,22,tcp']
+                firewall_node_rules: ['32,27017,tcp']
+                firewall_nodes:
+                    get_attr: [mongodb_secondary, private_ip]
+            servers:
+                get_attr: [mongodb_secondary, attributes, server]
+            signal_transport: TEMP_URL_SIGNAL
+        type: OS::Heat::SoftwareDeploymentGroup
+    firewall_config:
+        properties: {config: "---\n- name: Install and configure Firewall\n  hosts:\
+                \ localhost\n  connection: local\n  roles:\n  - firewall\n", group: ansible}
+        type: OS::Heat::SoftwareConfig
+    mongodb_config:
+        properties: {config: "---\n- name: Install and configure MongoDB\n  hosts:\
+                \ localhost\n  connection: local\n  roles:\n  - common\n  - mongodb\n",
+            group: ansible}
+        type: OS::Heat::SoftwareConfig
+    mongodb_secondary:
+        properties:
+            count: {get_param: server_count}
+            resource_def:
+                properties:
+                    ansible_branch: {get_param: ansible_branch}
+                    ansible_repo: {get_param: ansible_repo}
+                    mongodb_master:
+                        get_attr: [mongodb_server, networks, private, 0]
+                    parent_stack_id: {get_param: 'OS::stack_id'}
+                    server_flavor: {get_param: server_flavor}
+                    server_image: {get_param: server_image}
+                    server_name:
+                        str_replace:
+                            params:
+                                stack: {get_param: 'OS::stack_name'}
+                            template: stack-secondary-%index%
+                    ssh_key: {get_resource: ssh_key}
+                type: {get_param: secondary_template}
+        type: OS::Heat::ResourceGroup
+    mongodb_server:
+        properties:
+            config_drive: true
+            flavor: {get_param: server_flavor}
+            image: {get_param: server_image}
+            key_name: {get_resource: ssh_key}
+            metadata:
+                build_config: backup_agent_only,monitoring_defaults
+                rax-heat: {get_param: 'OS::stack_id'}
+            name: {get_param: 'OS::stack_name'}
+            software_config_transport: POLL_TEMP_URL
+            user_data_format: SOFTWARE_CONFIG
+        type: OS::Nova::Server
+    replicaset_config:
+        properties:
+            config: "---\n- name: Configure firewall and MongoDB Replicaset\n  hosts:\
+                \ localhost\n  connection: local\n  roles:\n  - mongodb\n  - firewall\n"
+            group: ansible
+            inputs:
+            - {default: '[]', name: firewall_nodes, type: CommaDelimitedList}
+            - {default: '[]', name: firewall_node_rules, type: CommaDelimitedList}
+        type: OS::Heat::SoftwareConfig
+    ssh_key:
+        properties:
+            name: {get_param: 'OS::stack_id'}
+            save_private_key: true
+        type: OS::Nova::KeyPair
+    upload_role_config:
+        properties:
+            config:
+                str_replace:
+                    params:
+                        repository: {get_param: ansible_repo}
+                        tag: {get_param: ansible_branch}
+                    template: '#!/bin/bash
+
+                        set -e
+
+                        git clone -b ''tag'' --single-branch --progress repository
+                        /etc/ansible/roles > $heat_outputs_path.results 2>&1
+
+                        '
+            group: script
+            outputs:
+            - {name: results}
+        type: OS::Heat::SoftwareConfig
