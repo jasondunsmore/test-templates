@@ -1,0 +1,16 @@
+heat_template_version: 2013-05-23
+
+description: |
+  A template implementation of a resource that provides a hello world application server
+
+parameters:
+
+  show:
+    description: the instance name
+    type: string
+    default: Hello world application
+
+resources:
+
+  the_resource:
+    type: OS::Heat::RandomString

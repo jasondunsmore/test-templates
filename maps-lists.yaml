@@ -1,0 +1,28 @@
+heat_template_version: 2013-05-23
+
+description: |
+  A template implementation of a resource that provides a hello world application server
+
+resources:
+
+  hello_world:
+    type: "OS::Nova::Server"
+    properties:
+      flavor: m1.tiny
+      image: cirros-0.3.4-x86_64-uec
+      name: { get_param: server_name }
+      key_name: jasond
+      save_admin_pass: { get_param: save_admin_pass }
+      user_data: |
+        #!/bin/bash -v
+        echo "hello world" > /root/hello-world.txt
+
+  child_template:
+    type: https://raw.githubusercontent.com/jasondunsmore/useful-heat-templates/master/minimal.yaml
+    properties:
+      show: { get_attr: [ hello_world, show ] }
+
+outputs:
+  public_ip:
+    value: { get_attr: [ hello_world, accessIPv4 ] }
+    description: The public ip address of the server
