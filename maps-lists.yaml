@@ -12,8 +12,3 @@ resources:
     type: https://raw.githubusercontent.com/jasondunsmore/useful-heat-templates/master/show.yaml
     properties:
       show: { get_attr: [ the_resource, show ] }
-
-outputs:
-  public_ip:
-    value: { get_attr: [ hello_world, accessIPv4 ] }
-    description: The public ip address of the server
