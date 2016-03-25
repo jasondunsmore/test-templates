@@ -6,7 +6,12 @@ description: |
 resources:
 
   the_resource:
-    type: OS::Heat::RandomString
+    type: "OS::Nova::Server"
+    properties:
+      flavor: m1.tiny
+      image: cirros-0.3.4-x86_64-uec
+      networks:
+        - network: private
 
   child_template:
     type: https://raw.githubusercontent.com/jasondunsmore/useful-heat-templates/master/show.yaml
