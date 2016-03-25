@@ -18,7 +18,7 @@ resources:
         echo "hello world" > /root/hello-world.txt
 
   child_template:
-    type: https://raw.githubusercontent.com/jasondunsmore/useful-heat-templates/master/minimal.yaml
+    type: https://raw.githubusercontent.com/jasondunsmore/useful-heat-templates/master/show.yaml
     properties:
       show: { get_attr: [ hello_world, show ] }
 
