@@ -7,7 +7,7 @@ parameters:
 
   show:
     description: the instance name
-    type: Json
+    type: json
     default: Hello world application
 
 resources:
