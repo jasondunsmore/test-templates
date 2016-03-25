@@ -8,9 +8,3 @@ parameters:
   show:
     description: the instance name
     type: json
-    default: Hello world application
-
-resources:
-
-  the_resource:
-    type: OS::Heat::RandomString
