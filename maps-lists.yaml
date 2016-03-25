@@ -12,3 +12,7 @@ resources:
     type: https://raw.githubusercontent.com/jasondunsmore/useful-heat-templates/master/show.yaml
     properties:
       show: { get_attr: [ the_resource, show ] }
+
+outputs:
+  show:
+    value: { get_attr: [ the_resource, show ] }
