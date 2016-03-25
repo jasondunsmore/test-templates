@@ -8,3 +8,4 @@ parameters:
   show:
     description: the instance name
     type: json
+    hidden: true
