@@ -10,12 +10,6 @@ resources:
     properties:
       flavor: m1.tiny
       image: cirros-0.3.4-x86_64-uec
-      name: { get_param: server_name }
-      key_name: jasond
-      save_admin_pass: { get_param: save_admin_pass }
-      user_data: |
-        #!/bin/bash -v
-        echo "hello world" > /root/hello-world.txt
 
   child_template:
     type: https://raw.githubusercontent.com/jasondunsmore/useful-heat-templates/master/show.yaml
