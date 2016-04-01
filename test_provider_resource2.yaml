@@ -22,7 +22,7 @@ resources:
       save_private_key: true
 
   provider_resource:
-    type: {get_param: url}
+    type: { get_param: url }
     properties:
       flavor: 4 GB Performance 
       image: 753a7703-4960-488b-aab4-a3cdd4b276dc # Ubuntu 14.04 LTS (Trusty Tahr) (PVHVM)
