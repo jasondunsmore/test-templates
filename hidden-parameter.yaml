@@ -4,3 +4,29 @@ parameters:
         description: value1.
         type: number
         hidden: true
+
+    param2:
+        description: value2.
+        type: number
+        hidden: true
+        default: 4322
+
+    param3:
+        description: value3.
+        type: string
+        hidden: true
+
+    param4:
+        description: value4.
+        type: string
+        hidden: false
+
+outputs:
+  param1:
+    value: { get_param: param1 }
+  param2:
+    value: { get_param: param2 }
+  param3:
+    value: { get_param: param3 }
+  param4:
+    value: { get_param: param4 }
