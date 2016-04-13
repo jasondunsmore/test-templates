@@ -1,0 +1,8 @@
+heat_template_version: 2013-05-23
+
+resources:
+  hello_world:
+    type: "Rackspace::Cloud::Server"
+    properties:
+      flavor: 4 GB General Purpose v1
+      image: 8237c352-4ac6-4b39-8517-3ada89802530
