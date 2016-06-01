@@ -1,0 +1,31 @@
+#
+# This is a hello world HOT template just defining a single compute
+# server.
+#
+heat_template_version: 2013-05-23
+
+description: >
+  Hello world HOT template that just defines a single server.
+  Contains just base features to verify base HOT support.
+
+resources:
+  random-string-cluster:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: 4
+      resource_def:
+        type: OS::Heat::RandomString
+  single-random-string:
+      type: OS::Heat::RandomString
+      properties:
+        length:
+          str_replace:
+            params:
+              foo: {get_attr: [random-string-cluster, value]}
+            template: |
+              foo1
+
+outputs:
+  foo:
+    description: Show foo value
+    value: {get_attr: [random-string-cluster, value]}
