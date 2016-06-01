@@ -19,7 +19,7 @@ resources:
   random_key_name:
     type: OS::Heat::RandomString
     properties:
-      length:
+      foo:
         str_replace:
           template: |
             foo bar
