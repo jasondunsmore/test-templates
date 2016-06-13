@@ -10,7 +10,8 @@ resources:
         type: AWS::ElasticLoadBalancing::LoadBalancer
         properties:
             AvailabilityZones: []
-            Instances: [ get_resource: aws_server1 ]
+            Instances:
+              - "58b1c8b4-1b85-4eb4-9566-4e6445326076"
             Listeners: [{
                 LoadBalancerPort: 8945,
                 InstancePort: 80,
