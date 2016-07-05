@@ -51,3 +51,45 @@ resources:
                 UnhealthyThreshold: 10
                 Interval: 10
                 Timeout: 60
+
+outputs:
+
+  "AWS Server ID":
+    value: { get_resource: aws_server1 }
+    description: ID of the AWS::EC2::Instance resource
+
+  "AWS EC2 Server AvailabilityZone":
+    value: { get_attr: [ aws_server1, AvailabilityZone ] }
+    description: AWS EC2 Server AvailabilityZone 
+
+  "AWS EC2 Server PrivateDnsName":
+    value: { get_attr: [ aws_server1, PrivateDnsName ] }
+    description: AWS EC2 Server PrivateDnsName 
+
+  "AWS EC2 Server PrivateIp":
+    value: { get_attr: [ aws_server1, PrivateIp ] }
+    description: AWS EC2 Server PrivateIp 
+
+  "AWS EC2 Server PublicDnsName":
+    value: { get_attr: [ aws_server1, PublicDnsName ] }
+    description: AWS EC2 Server PublicDnsName 
+
+  "AWS EC2 Server PublicIp":
+    value: { get_attr: [ aws_server1, PublicIp ] }
+    description: AWS EC2 Server PublicIp 
+
+  "AWS Cloud Formation Wait Condition":
+    value: { get_attr: [ aws_wait_condition, Data ] }
+    description: AWS Cloud Formation Wait Condition data 
+
+  "AWS ElasticLoadBalancer CanonicalHostedZoneName":
+    value: { get_attr: [ ElasticLoadBalancer, CanonicalHostedZoneName ] }
+    description: details the CanonicalHostedZoneName 
+
+  "AWS ElasticLoadBalancer CanonicalHostedZoneNameID":
+    value: { get_attr: [ ElasticLoadBalancer, CanonicalHostedZoneNameID ] }
+    description: details the CanonicalHostedZoneNameID 
+
+  "AWS ElasticLoadBalancer DNSName":
+    value: { get_attr: [ ElasticLoadBalancer, DNSName ] }
+    description: details the DNSName 
