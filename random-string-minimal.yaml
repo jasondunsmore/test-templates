@@ -3,6 +3,13 @@ heat_template_version: 2013-05-23
 resources:
   test_random_string:
     type: OS::Heat::RandomString
+    properties:
+      length: { get_attr: [random_string_count, value] }
+  random_string_count:
+    type: OS::Heat::RandomString
+    properties:
+      character_classes: digits
+      length: 2
 
 outputs:
   foo:
