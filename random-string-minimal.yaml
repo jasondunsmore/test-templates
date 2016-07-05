@@ -8,7 +8,7 @@ resources:
   random_string_count:
     type: OS::Heat::RandomString
     properties:
-      character_classes: digits
+      character_classes: [digits]
       length: 2
 
 outputs:
