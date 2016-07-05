@@ -9,7 +9,8 @@ resources:
     type: OS::Heat::RandomString
     properties:
       character_classes:
-        - digits: 2
+        - class: digits
+          min: 2
       length: 2
 
 outputs:
