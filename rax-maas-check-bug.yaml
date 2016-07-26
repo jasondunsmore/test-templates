@@ -3,6 +3,8 @@ resources:
   test_check:
     type: Rackspace::CloudMonitoring::Check
     properties:
+      details:
+        url: http://www.foo.com
       entity: a313227f-9939-4973-bbb9-b529fc603f36
       target_hostname: 166.78.179.132
       type: remote.http
