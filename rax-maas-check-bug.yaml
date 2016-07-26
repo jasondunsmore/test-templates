@@ -1,0 +1,7 @@
+heat_template_version: '2015-10-15'
+resources:
+  test_check:
+    type: Rackspace::CloudMonitoring::Check
+    properties:
+      entity: a313227f-9939-4973-bbb9-b529fc603f36
+      target_hostname: 166.78.179.132

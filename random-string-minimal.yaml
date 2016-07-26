@@ -8,10 +8,10 @@ resources:
   random_string_count:
     type: OS::Heat::RandomString
     properties:
+      length: 2
       character_classes:
         - class: digits
           min: 2
-      length: 2
 
 outputs:
   foo:
