@@ -8,3 +8,4 @@ resources:
       entity: a313227f-9939-4973-bbb9-b529fc603f36
       target_hostname: 166.78.179.132
       type: remote.http
+      monitoring_zones_poll: [Northern Virginia (IAD)]
