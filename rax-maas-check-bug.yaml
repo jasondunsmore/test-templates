@@ -1,5 +1,10 @@
 heat_template_version: 2015-10-15
 resources:
+  gitlab_server_public_ip:
+    type: Rackspace::RackConnect::PublicIP
+    depends_on: gitlab_server
+    properties:
+      server_id: { get_resource: gitlab_server }
   gitlab_server:
     type: "OS::Nova::Server"
     properties:
@@ -14,6 +19,7 @@ resources:
         build_config: "backup_agent_only,monitoring_defaults"
   gitlab_server_http_check:
     type: Rackspace::CloudMonitoring::Check
+    depends_on: gitlab_server_public_ip
     properties:
       entity: { get_resource: gitlab_server }
       type: remote.http
