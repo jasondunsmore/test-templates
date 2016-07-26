@@ -1,11 +1,42 @@
-heat_template_version: '2015-10-15'
+heat_template_version: 2015-10-15
 resources:
-  test_check:
+  gitlab_server:
+    type: "OS::Nova::Server"
+    properties:
+      name: { get_param: "OS::stack_name" }
+      flavor: 4 GB Performance
+      image: CentOS 7 (PVHVM)
+      networks:
+      - network: RC-rcheatdfwv3
+      - network: 11111111-1111-1111-1111-111111111111
+      metadata:
+        rax-heat: { get_param: "OS::stack_id" }
+        build_config: "backup_agent_only,monitoring_defaults"
+  gitlab_server_http_check:
     type: Rackspace::CloudMonitoring::Check
     properties:
-      details:
-        url: http://www.foo.com
-      entity: a313227f-9939-4973-bbb9-b529fc603f36
-      target_hostname: 166.78.179.132
+      entity: { get_resource: gitlab_server }
       type: remote.http
-      monitoring_zones_poll: [Northern Virginia (IAD)]
+      label:
+        str_replace:
+          template: stack HTTP Check
+          params:
+            stack: { get_param: "OS::stack_name" }
+      details:
+        url:
+          str_replace:
+            template: "http://ipaddr"
+            params:
+              ipaddr: { get_attr: [gitlab_server, accessIPv4] }
+      metadata:
+        rax-heat: { get_param: "OS::stack_id" }
+        stack-name: { get_param: "OS::stack_name" }
+      period: 120
+      timeout: 10
+      monitoring_zones_poll:
+      - Northern Virginia (IAD)
+      - Chicago (ORD)
+      - Dallas Fort Worth (DFW)
+      - London (LON)
+      target_hostname: { get_attr: [gitlab_server, accessIPv4] }
+      target_receiver: IPv4
