@@ -1,5 +1,10 @@
 heat_template_version: 2015-10-15
 resources:
+  gitlab_server_public_ip:
+    type: Rackspace::RackConnect::PublicIP
+    depends_on: gitlab_server
+    properties:
+      server_id: { get_resource: gitlab_server }
   gitlab_server:
     type: "OS::Nova::Server"
     properties:
