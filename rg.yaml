@@ -5,5 +5,5 @@ resources:
         properties:
             count: 125
             resource_def:
-                type: rand_str.yaml
+                type: https://raw.githubusercontent.com/jasondunsmore/useful-heat-templates/master/rand_str.yaml
 
