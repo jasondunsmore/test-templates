@@ -1,0 +1,28 @@
+heat_template_version: 2014-10-16
+
+description: |
+  Test template for Trove resource capabilities
+
+parameters:
+  db_pass:
+    type: string
+    hidden: true
+    description: Database access password
+    default: secrete
+
+resources:
+
+  service_db:
+    type: OS::Trove::Instance
+    properties:
+      name: trove-test-db
+      datastore_type: mariadb
+      flavor: 1GB Instance
+      size: 10
+      datastore_version: 10
+      databases:
+      - name: test-data
+      users:
+      - name: kitchen_sink
+        password: { get_param: db_pass }
+        databases: [ test_data ]
