@@ -1,0 +1,20 @@
+heat_template_version: 2013-05-23
+
+description: >
+  Hello world HOT template that just defines a single server.
+  Contains just base features to verify base HOT support.
+
+parameters:
+  a:
+    type: number
+
+resources:
+  random_key:
+    type: OS::Heat::RandomString
+    properties:
+      length: {get_param: a}
+
+outputs:
+  foo:
+    description: Show foo parameter value
+    value: {get_resource: random_key}
