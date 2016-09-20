@@ -24,7 +24,7 @@ resources:
 outputs:
   hot:
     description: Show foo parameter value
-    value: {get_param: OS::region}
+    value: {get_param: "OS::region"}
   aws:
     description: Show foo parameter value
-    value: {get_param: AWS::Region}
+    value: {get_param: "AWS::Region"}
