@@ -22,6 +22,9 @@ resources:
       length: 8
 
 outputs:
-  foo:
+  hot:
     description: Show foo parameter value
-    value: {get_param: foo}
+    value: {get_param: OS::region}
+  aws:
+    description: Show foo parameter value
+    value: {get_param: AWS::Region}
