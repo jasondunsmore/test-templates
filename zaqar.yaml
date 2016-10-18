@@ -1,0 +1,7 @@
+heat_template_version: 2013-05-23
+
+resources:
+  test:
+    type: OS::Zaqar::Queue
+    properties:
+      name: foo
