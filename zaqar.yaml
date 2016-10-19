@@ -1,7 +1,15 @@
 heat_template_version: 2013-05-23
 
 resources:
-  test:
+  test_queue:
     type: OS::Zaqar::Queue
     properties:
       name: foo
+
+  test_subscription:
+    type: OS::Zaqar::Subscription
+    properties:
+      name: foo
+      subscriber: mailto:me@test.com
+      ttl: 3600
+
