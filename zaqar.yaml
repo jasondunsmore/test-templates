@@ -1,5 +1,10 @@
 heat_template_version: 2013-05-23
 
+parameters:
+  subscriber:
+    type: string
+    default: mailto:me@test.com
+
 resources:
   test_queue:
     type: OS::Zaqar::Queue
@@ -10,6 +15,6 @@ resources:
     type: OS::Zaqar::Subscription
     properties:
       name: foo
-      subscriber: mailto:me@test.com
+      subscriber: { get_param: subscriber }
       ttl: 3600
 
