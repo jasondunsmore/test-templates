@@ -1,0 +1,84 @@
+heat_template_version: 2014-10-16
+
+parameters:
+  trigger_update_param:
+    type: string
+    default: ''
+
+resources:
+  server:
+    type: OS::Nova::Server
+    properties:
+      image: 4f928423-f26d-4aee-ab8f-3839a952d6d0
+      flavor: m1.small
+      key_name: testkey
+      user_data_format: SOFTWARE_CONFIG
+      software_config_transport: POLL_SERVER_HEAT
+      networks:
+        - port: {get_resource: server_eth0}
+
+  fixed_network:
+    type: OS::Neutron::Net
+    properties:
+      name: private
+
+  fixed_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      cidr: 10.0.0.0/24
+      network: {get_resource: fixed_network}
+      dns_nameservers:
+        - 8.8.8.8
+
+  server_floating:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: public
+      port_id: {get_resource: server_eth0}
+
+  server_eth0:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_resource: fixed_network}
+      security_groups:
+        - {get_resource: secgroup_base}
+      fixed_ips:
+        - subnet: {get_resource: fixed_subnet}
+
+  extrouter:
+    type: OS::Neutron::Router
+    properties:
+      external_gateway_info:
+        network: public
+
+  extrouter_inside:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: {get_resource: extrouter}
+      subnet: {get_resource: fixed_subnet}
+
+  secgroup_base:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      rules:
+        - protocol: icmp
+        - protocol: tcp
+          port_range_min: 22
+          port_range_max: 22
+
+  software_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ungrouped
+      config: |
+        echo Success > /root/success
+
+  software_deploy:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: HEAT_SIGNAL
+      config: {get_resource: software_config}
+      server: {get_resource: server}
+      actions: ['UPDATE']
+      input_values:
+        trigger_update_param: {get_param: trigger_update_param}
