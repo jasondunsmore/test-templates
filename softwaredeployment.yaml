@@ -5,11 +5,14 @@ parameters:
     type: string
     default: ''
 
+  image:
+    type: string
+
 resources:
   server:
     type: OS::Nova::Server
     properties:
-      image: 4f928423-f26d-4aee-ab8f-3839a952d6d0
+      image: {get_param: image}
       flavor: m1.small
       key_name: testkey
       user_data_format: SOFTWARE_CONFIG
@@ -69,8 +72,9 @@ resources:
   software_config:
     type: OS::Heat::SoftwareConfig
     properties:
-      group: ungrouped
+      group: script
       config: |
+        #!/bin/sh
         echo Success > /root/success
 
   software_deploy:
