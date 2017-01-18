@@ -1,0 +1,11 @@
+heat_template_version: 2013-05-23
+
+parameters:
+  my_param:
+    type: comma_delimited_list
+    #default: '[u''d74d408f-6a02-46fc-a501-f248e37e4f2f'',u''d74d408f-6a02-46fc-a501-f248e37e4f2g'']'
+    default: ['d74d408f-6a02-46fc-a501-f248e37e4f2f', 'd74d408f-6a02-46fc-a501-f248e37e4f2g']
+
+outputs:
+  my_param:
+    value: { get_param: my_param }
