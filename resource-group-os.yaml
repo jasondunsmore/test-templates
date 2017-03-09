@@ -1,0 +1,20 @@
+heat_template_version: 2014-10-16 
+
+parameters:
+  count:
+    type: number
+    default: 2
+
+  image:
+    type: string
+
+resources:
+  nodes:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: {get_param: count}
+      resource_def:
+        type: OS::Nova::Server
+        properties:
+          image: {get_param: image}
+          flavor: m1.small
