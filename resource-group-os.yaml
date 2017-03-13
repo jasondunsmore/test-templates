@@ -8,6 +8,9 @@ parameters:
   image:
     type: string
 
+  network:
+    type: string
+
 resources:
   nodes:
     type: OS::Heat::ResourceGroup
@@ -18,3 +21,5 @@ resources:
         properties:
           image: {get_param: image}
           flavor: m1.small
+          networks:
+          - network: {get_param: network}
